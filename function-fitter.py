@@ -27,13 +27,21 @@ def minVal(lst): # position of max value in the input list
 	
 	return pos
 
-def createList():
-	file = open("gauss-input.txt", 'r')
-	s = file.readlines()
-	for i in range(len(s)):
-		s[i] = s[i].split()
-		for j in range(len(s[i])):
-			s[i][j] = float(s[i][j])
+def create():
+	file = open("input", 'r')
+	temp = file.readlines()
+	s = []
+	for item in temp:
+		if (item[0] == '#'): pass
+		elif (item == '\n'): pass
+		else:
+			s.append(item[:-1]) if item[-1] == '\n' else s.append(item)
+	#for i in range(len(s)):
+	#	s[i] = s[i].split()
+	#	for j in range(len(s[i])):
+	#		s[i][j] = float(s[i][j])
+	#for i in s:
+	#	print(i, end = "")
 	return s
 	
 def substitute(expr, x, vars):
@@ -101,12 +109,18 @@ def substitutehigh(expr, x, vars, i):
 
 def main():
 
-	print("\n\n-----FUNCTION FITTER-----\n")
+#	print("\n\n-----FUNCTION FITTER-----\n")
+	
+	lines = create()
+	
+#	for i in lines:
+#		print(i)
+	
+	
+	#expression, exps, inp = create()
+	#inp.sort()
 
-	inp = createList()
-	inp.sort()
-
-	expression = "<k*>*(1/math.sqrt(2*math.pi*<var*>))*math.exp(-(([x]-<med>)**2/(2*<var*>)))"
+	expression = lines.pop(0) # transfer first line into <expression>
 
 	# find variables in the expression	
 	temp = expression.split('<')	
@@ -124,8 +138,23 @@ def main():
 		if (vars[i][-1] == '*'): vars[i] = [vars[i][:-1], True] # treat exponentially and trim name
 		else: vars[i] = [vars[i], False] # treat linearly
 		
+	# prepare  initial value expressions
+	
+	tempval = []
+	tempvald = []
+	
+	for i in range(len(vars)):
+		tempval.append(lines.pop(0)) # transfer conputed initial value expression to <tempval>
+		tempvald.append(lines.pop(0)) # transfer conputed initial distance expression to <tempval>
 		
 	# find maximum, minimum and their difference from neighbors (TODO: create for minimum)
+	
+	inp = lines
+	for i in range(len(inp)):
+		inp[i] = inp[i].split()
+		for j in range(len(inp[i])):
+			inp[i][j] = float(inp[i][j])
+	inp.sort() # <lines> list is (should be) now identical with <inp> list like in gauss-fitter.py
 	
 	maxpos = maxVal(inp)
 	maxarg = inp[maxpos][0]
@@ -147,12 +176,14 @@ def main():
 	
 	if (maxvald == 0): maxvald = maxval/1000 # a small non-zero value, to possibly enable further computetions
 	
-	
 	# compute initial values
+	# computations are not right after extractions, because they need maxval, maxarg, etc.
+
+	for i in range(len(vars)):
+		tempval[i] = float(eval(tempval[i])) # transfer conputed initial value expression to <tempval>
+		tempvald[i] = float(eval(tempvald[i])) # transfer conputed initial distance expression to <tempval>
+		vars[i].extend([tempval[i], tempvald[i]])
 	
-	vars[0].extend([float(eval("maxval*math.sqrt(2*math.pi*maxargd**2/(2*(math.log(maxval/maxvald))))")), float(eval("10"))])
-	vars[1].extend([float(eval("maxarg")), float(eval("maxargd**2/(2*(math.log(maxval/maxvald)))"))])
-	vars[2].extend([float(eval("maxargd**2/(2*(math.log(maxval/maxvald)))")), float(eval("10"))])
 	
 	# now each element of <vars> list is a list of (name, exponentiality, value, distance)
 	# TODO (maybe): create a class for it
@@ -232,7 +263,7 @@ def main():
 	print("OPTIMIZATION COMPLETED:")
 	for item in vars:
 		print("{0:3} = {1:8.5f} ± {2:.2e}".format(item[0], item[2], item[3]))	
-		
+	
 
 	
 	
