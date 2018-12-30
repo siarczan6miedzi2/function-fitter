@@ -193,6 +193,8 @@ def main():
 	else: # left-hand argument is more (or equally) distant or the right-hand argument's value is another maximum
 		minargd = inp[minpos][0] - inp[maxpos-1][0]
 		minvald = inp[minpos-1][1]
+		
+	if (maxvald == 0): maxvald = maxval/1000 # a small non-zero value, to possibly enable further computetions
 	
 	# compute initial values
 	# computations are not right after extractions, because they need maxval, maxarg, etc.
