@@ -147,7 +147,7 @@ def main():
 		tempval.append(lines.pop(0)) # transfer conputed initial value expression to <tempval>
 		tempvald.append(lines.pop(0)) # transfer conputed initial distance expression to <tempval>
 		
-	# find maximum, minimum and their difference from neighbors (TODO: create for minimum)
+	# find maximum, minimum and their difference from neighbors
 	
 	inp = lines
 	for i in range(len(inp)):
@@ -175,6 +175,24 @@ def main():
 		maxvald = inp[maxpos-1][1]
 	
 	if (maxvald == 0): maxvald = maxval/1000 # a small non-zero value, to possibly enable further computetions
+	
+	minpos = maxVal(inp)
+	minarg = inp[minpos][0]
+	minval = inp[minpos][1]
+	minvald = None
+	minargd = None
+	if (minpos == 0): # maximum value at the beginning
+		minargd = inp[1][0] - inp[0][0]
+		minvald = inp[1][1]
+	elif (minpos == len(inp)-1): # maximum value at the end
+		minargd = inp[-1][0] - inp[-2][0]
+		minvald = inp[-2][1]
+	elif ((inp[minpos+1][0] - inp[minpos][0] > inp[minpos][0] - inp[minpos-1][0]) and not (inp[minpos+1][1] == inp[minpos][1])): # right-hand argument is more distant and does not have another maximum value
+		minargd = inp[minpos+1][0] - inp[minpos][0]
+		minvald = inp[minpos+1][1]
+	else: # left-hand argument is more (or equally) distant or the right-hand argument's value is another maximum
+		minargd = inp[minpos][0] - inp[maxpos-1][0]
+		minvald = inp[minpos-1][1]
 	
 	# compute initial values
 	# computations are not right after extractions, because they need maxval, maxarg, etc.
@@ -211,7 +229,7 @@ def main():
 			# compute current error value
 			s = substitute(expression, item[0], vars)
 			mainerrorvalue += (item[1] - eval(s))**2
-		#	print("\t", mainerrorvalue)
+		#	print(item[1], '\t', s, eval(s), '\t', mainerrorvalue)
 			
 			for i in range(len(errorvalues)): # for every variable
 				# compute value for lowered valiable
