@@ -217,10 +217,12 @@ def main():
 		
 		step += 1
 		if (step > 1000): break
-	
-		print("Optimization step", step, "\b:")
+
+		msg = "Optimization step " + str(step) + ":\n"
 		for item in vars:
-			print("{0:3} = {1:8.5f} ± {2:.2e}".format(item[0], item[2], item[3]))
+			msg += "{0:3} = {1:8.5f} ± {2:.2e}\n".format(item[0], item[2], item[3])
+			
+		print(msg)
 	
 		mainerrorvalue = 0
 		errorvalues = []
